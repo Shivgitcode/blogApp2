@@ -5,7 +5,12 @@ dotenv.config();
 
 const jwt = jsonwebtoken;
 
-export const signToken = async (username: string) => {
-  const token = jwt.sign({ username }, process.env.JWT_SECRET as string);
+export const signToken = async (id: string) => {
+  const token = jwt.sign({ id }, process.env.JWT_SECRET as string);
   return token;
+};
+
+export const verifyToken = async (token: string) => {
+  const verifiedToken = jwt.verify(token, process.env.JWT_SECRET as string);
+  return verifiedToken;
 };
