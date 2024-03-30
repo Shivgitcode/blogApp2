@@ -6,24 +6,30 @@ const prisma = new PrismaClient();
 export const createPost = async (req, res, next) => {
     try {
         const files = req.files.imgFile;
-        const token = req.cookies.jwt;
-        const { id } = (await verifyToken(token));
-        console.log(token);
-        const response = await cloudinary.uploader.upload(files.tempFilePath, {
-            folder: "Blogs",
-        });
-        const createPost = await prisma.post.create({
-            data: {
-                ...req.body,
-                img: response.secure_url,
-                userId: id,
-            },
-        });
-        res.status(200).json({
-            message: "post created",
-            data: createPost,
-            success: true,
-        });
+        console.log(files);
+        if (files) {
+            const token = req.cookies.jwt;
+            const { id } = (await verifyToken(token));
+            console.log(token);
+            const response = await cloudinary.uploader.upload(files.tempFilePath, {
+                folder: "Blogs",
+            });
+            const createPost = await prisma.post.create({
+                data: {
+                    ...req.body,
+                    img: response.secure_url,
+                    userId: id,
+                },
+            });
+            res.status(200).json({
+                message: "post created",
+                data: createPost,
+                success: true,
+            });
+        }
+        else {
+            return next("file not found", 404);
+        }
         // const newPost=
     }
     catch (error) {
